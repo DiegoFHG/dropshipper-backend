@@ -74,6 +74,15 @@ class ProductController extends Controller {
 
     if ($product == null) abort(404);
 
+    $req->validate([
+      'name' => 'string|max:30',
+      'price' => 'numeric',
+      'description' => 'string',
+      'amount' => 'integer|numeric',
+      'min_amount_purchase' => 'integer|numeric',
+      'available' => 'boolean'
+    ]);
+
     if ($product->seller == $user->seller) {
       $product->update($req->all());
 
@@ -139,7 +148,7 @@ class ProductController extends Controller {
         'search_term' => 'required|string|max:30'
       ]);
 
-      return Product::search($req->search_term)->paginate(20);
+      return Product::search($req->search_term)->get();
     }
 
     abort(401);
@@ -150,6 +159,6 @@ class ProductController extends Controller {
       'search_term' => 'required|string|max:30'
     ]);
 
-    return Product::search($req->input('search_term'))->where('available', 'true')->paginate(20);
+    return Product::search($req->input('search_term'))->where('available', 'true')->get();
   }
 }
